@@ -399,6 +399,50 @@
     .mommy-text p { font-size: 1.05rem; line-height: 1.82; opacity: 0.85; margin-bottom: 18px; }
     .mommy-pill { background: rgba(233,30,99,0.12); border: 1.5px solid rgba(233,30,99,0.3); border-radius: 100px; padding: 7px 18px; font-size: 0.85rem; font-weight: 800; display: inline-block; margin: 4px; }
 
+    /* ─── TRIVIA QUIZ ─── */
+    .quiz-section { background: linear-gradient(160deg, #0d1025 0%, #1e0e3a 50%, #0d1025 100%); color: white; }
+    .quiz-section .section-title { color: white; }
+    .quiz-section .section-desc { color: rgba(255,255,255,0.7); }
+    .quiz-shell { max-width: 720px; margin: 52px auto 0; }
+    .quiz-progress-bar { background: rgba(255,255,255,0.1); border-radius: 100px; height: 8px; margin-bottom: 32px; overflow: hidden; }
+    .quiz-progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), #e74c3c); border-radius: 100px; transition: width .4s ease; }
+    .quiz-q-label { font-size: 0.72rem; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: block; }
+    .quiz-question { font-family: 'Bebas Neue', sans-serif; font-size: clamp(1.6rem, 4vw, 2.4rem); line-height: 1.15; margin-bottom: 30px; color: white; }
+    .quiz-options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+    .quiz-opt {
+      background: rgba(255,255,255,0.07); border: 2px solid rgba(255,255,255,0.15);
+      border-radius: 14px; padding: 16px 22px; cursor: pointer;
+      font-size: 1rem; font-weight: 700; color: white; text-align: left;
+      transition: background .2s, border-color .2s, transform .15s;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .quiz-opt:hover:not(.disabled) { background: rgba(245,166,35,0.15); border-color: var(--gold); transform: translateX(4px); }
+    .quiz-opt.correct { background: rgba(39,174,96,0.25); border-color: #27ae60; }
+    .quiz-opt.wrong { background: rgba(192,57,43,0.25); border-color: #c0392b; }
+    .quiz-opt.disabled { cursor: default; }
+    .quiz-opt-letter { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--gold); min-width: 24px; }
+    .quiz-feedback { border-radius: 14px; padding: 18px 22px; margin-bottom: 20px; font-size: 0.97rem; line-height: 1.65; display: none; }
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.correct { background: rgba(39,174,96,0.18); border: 1.5px solid #27ae60; }
+    .quiz-feedback.wrong { background: rgba(192,57,43,0.18); border: 1.5px solid #c0392b; }
+    .quiz-next-btn {
+      background: var(--gold); color: var(--navy); font-weight: 900; font-size: 0.9rem;
+      letter-spacing: 1.5px; text-transform: uppercase; padding: 14px 36px; border-radius: 100px;
+      border: none; cursor: pointer; transition: transform .2s, box-shadow .2s; display: none;
+    }
+    .quiz-next-btn.show { display: inline-block; }
+    .quiz-next-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(245,166,35,0.4); }
+    .quiz-score-screen { text-align: center; display: none; padding: 40px 0; }
+    .quiz-score-screen.show { display: block; }
+    .quiz-score-num { font-family: 'Bebas Neue', sans-serif; font-size: 6rem; color: var(--gold); line-height: 1; }
+    .quiz-score-msg { font-size: 1.2rem; line-height: 1.8; margin: 20px 0 32px; opacity: 0.85; }
+    .quiz-restart-btn {
+      background: transparent; color: var(--gold); border: 2px solid var(--gold);
+      font-weight: 900; font-size: 0.9rem; letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 13px 34px; border-radius: 100px; cursor: pointer; transition: all .2s;
+    }
+    .quiz-restart-btn:hover { background: var(--gold); color: var(--navy); }
+
     /* ─── FOOTER ─── */
     footer { background: var(--navy); color: white; text-align: center; padding: 60px 24px; }
     .footer-paw { font-size: 3.5rem; margin-bottom: 16px; display: block; }
@@ -429,6 +473,7 @@
     <a href="#roadtrip">Road Trips</a>
     <a href="#facts">Facts</a>
     <a href="#care">Care</a>
+    <a href="#quiz">Trivia</a>
   </div>
 </nav>
 
@@ -1631,6 +1676,31 @@
   </div>
 </section>
 
+<!-- GOOSE TRIVIA QUIZ -->
+<section class="quiz-section" id="quiz">
+  <div class="container">
+    <span class="section-label" style="background:rgba(245,166,35,0.2);color:var(--gold);">🧠 Test Your Knowledge</span>
+    <h2 class="section-title">THE OFFICIAL GOOSE TRIVIA QUIZ</h2>
+    <p class="section-desc">Think you know Goose? 20 questions. No cheating. Mommy Aislynn will know.</p>
+    <div class="quiz-shell">
+      <div id="quiz-active">
+        <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quiz-progress" style="width:0%"></div></div>
+        <span class="quiz-q-label" id="quiz-q-label">Question 1 of 20</span>
+        <div class="quiz-question" id="quiz-question"></div>
+        <div class="quiz-options" id="quiz-options"></div>
+        <div class="quiz-feedback" id="quiz-feedback"></div>
+        <button class="quiz-next-btn" id="quiz-next">Next Question →</button>
+      </div>
+      <div class="quiz-score-screen" id="quiz-score">
+        <div class="quiz-score-num" id="score-num"></div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--gold);letter-spacing:3px;margin-top:8px;">OUT OF 20</div>
+        <div class="quiz-score-msg" id="score-msg"></div>
+        <button class="quiz-restart-btn" onclick="startQuiz()">Play Again 🐾</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <span class="footer-paw">🐾</span>
@@ -1648,6 +1718,225 @@
 </footer>
 
 <script>
+  // ─── GOOSE TRIVIA QUIZ ───
+  const quizData = [
+    {
+      q: "Where does Goose work, according to Mommy Aislynn?",
+      opts: ["Head of Household Security", "The Frito Factory", "Remote Nap Consultant", "Squirrel Surveillance Division"],
+      answer: 1,
+      correct: "Correct! Goose is a proud Frito Factory employee. What he does there exactly is classified.",
+      wrong: "Wrong! Goose is a dedicated Frito Factory employee. Very important work."
+    },
+    {
+      q: "When was Goose born, according to Mommy Aislynn?",
+      opts: ["September 2023", "2018, roughly", "Yesterday", "Time is a flat circle and Goose transcends it"],
+      answer: 2,
+      correct: "Correct! He was born yesterday. He is born yesterday every single day. He is always a baby.",
+      wrong: "Wrong! Mommy Aislynn says he was born yesterday. Every day. He is always a baby. Always."
+    },
+    {
+      q: "Which of the following is a REAL nickname for Goose?",
+      opts: ["Biscuit", "Noodle", "Goblet", "Peanut"],
+      answer: 2,
+      correct: "Correct! Goblet is a real, official, in-use nickname. As is Gob, Goopert, Feathers, Bertleigh, and many more.",
+      wrong: "Wrong! The correct answer is Goblet. His nicknames are extensive and fully operational."
+    },
+    {
+      q: "Who does Goose love most in the entire world?",
+      opts: ["Daddy Jakey", "Mema", "The Yellow Duck", "Mommy Aislynn"],
+      answer: 3,
+      correct: "Correct! It's Mommy Aislynn. He spends all day waiting for her to come home. He invented loving her.",
+      wrong: "Wrong! It's Mommy Aislynn. He loves his Daddy Jakey too, but let's be honest about who he waits by the door for."
+    },
+    {
+      q: "What is Goose's full legal name?",
+      opts: ["Goose Grantz", "Goose Bertleigh Noelani Grantz", "Goose Bertleigh Noelani Dvorak Grantz", "Goose McGooseface"],
+      answer: 2,
+      correct: "Correct! Goose Bertleigh Noelani Dvorak Grantz. A name with gravitas. A name befitting a philosopher king.",
+      wrong: "Wrong! It's Goose Bertleigh Noelani Dvorak Grantz. All five names are necessary and important."
+    },
+    {
+      q: "What does Goose eat on every walk that prompts Mommy Aislynn to call him a heffer?",
+      opts: ["Flowers", "Dirt", "Grass", "Other dogs' snacks"],
+      answer: 2,
+      correct: "Correct! Grass. He eats the grass. He will always eat the grass. Heffer.",
+      wrong: "Wrong! It's grass. He sees it. He eats it. Mommy calls him a heffer. This is just who he is."
+    },
+    {
+      q: "According to his family, Goose is part dog and part what combination of other things?",
+      opts: ["Cat, fish, horse, and turtle", "Seal, bird, bat, and baby", "Wolf, bear, dolphin, and toddler", "Just dog. Only dog. Very normal dog."],
+      answer: 1,
+      correct: "Correct! Dog, seal, bird, bat, and baby. All five are accurate. The evidence is in the photos.",
+      wrong: "Wrong! He is part dog, part seal, part bird, part bat, and part baby. Look at how he sleeps. Look at his little face."
+    },
+    {
+      q: "What is Goose's signature move the moment Mommy Aislynn walks through the door?",
+      opts: ["Pretends to be asleep", "Immediate, explosive full-house zoomies", "Brings her the yellow duck", "Silently judges her for being late"],
+      answer: 1,
+      correct: "Correct! ZOOMIES. Instantaneous. Full speed. No warning. Normal service resumes approximately 90 seconds later.",
+      wrong: "Wrong! The answer is immediate, explosive zoomies. He cannot help it. He simply cannot."
+    },
+    {
+      q: "Which of the following is NOT one of Goose's nicknames?",
+      opts: ["Goopert", "Feathers", "Biscuit", "Bird Child"],
+      answer: 2,
+      correct: "Correct! Biscuit is not one of his nicknames. His actual nicknames include Gob, Goblet, Goopert, Bab, Bert, Bertie, Feathers, Goosefeathers, and more.",
+      wrong: "Wrong! Biscuit is the fake one. Real nicknames include: Goosey, Feathers, Goosefeathers, Bird, Bertleigh, Gob, Goblet, Goopert, Gooby, Bab, Bert, Bertie, Bird Child, and Mommy."
+    },
+    {
+      q: "What health challenge has Goose handled with total resilience and a completely unchanged love of walks?",
+      opts: ["A fear of squirrels", "Elbow dysplasia", "Chronic zoomie disorder", "Grass addiction"],
+      answer: 1,
+      correct: "Correct! Elbow dysplasia. He has it. He does not care. He still loves every single walk. He is so impressive.",
+      wrong: "Wrong! It's elbow dysplasia. He has it and handles it like a champion. We are so proud of him."
+    },
+    {
+      q: "What major personal achievement is Goose wrapping up, and his family couldn't be more proud of?",
+      opts: ["His memoir", "His PhD in Nap Science", "His weight loss journey", "His campaign for local office"],
+      answer: 2,
+      correct: "Correct! His weight loss journey. He did the work. He showed up. We are SO proud of him.",
+      wrong: "Wrong! It's his weight loss journey. He earned it. Every single step (that wasn't grass)."
+    },
+    {
+      q: "What groundbreaking thing did Goose invent, according to Mommy Aislynn?",
+      opts: ["The zoomie", "The chin rest", "Feminism", "Upside-down sleeping"],
+      answer: 2,
+      correct: "Correct! Goose invented feminism. Mommy Aislynn says so. We have no reason to doubt this.",
+      wrong: "Wrong! The correct answer is feminism. He invented it. Mommy Aislynn confirmed it."
+    },
+    {
+      q: "What is Goose's favorite toy?",
+      opts: ["A rope toy", "A stuffed bear", "A red ball", "A yellow duck"],
+      answer: 3,
+      correct: "Correct! The yellow duck. He carries it around. He presents it to people. It is a whole relationship.",
+      wrong: "Wrong! It's a yellow duck. He retrieves it. He presents it. The ritual is sacred."
+    },
+    {
+      q: "Who might be Goose's future Pitbull sister?",
+      opts: ["Daisy", "Yucca", "Bella", "Pretzel"],
+      answer: 1,
+      correct: "Correct! Yucca! A potential Pitbull sister in the works. Goose gets along great with other dogs so this would be ideal.",
+      wrong: "Wrong! It's Yucca. A potential Pitbull sister. The dream is alive."
+    },
+    {
+      q: "Where does Goose appear on Daddy Jakey's phone?",
+      opts: ["As a contact photo", "As the lock screen", "In a dedicated Goose folder", "He chewed the phone"],
+      answer: 1,
+      correct: "Correct! The lock screen. As it should be. Captured at 8:42am on a 40°F morning, peeking from blankets like a legend.",
+      wrong: "Wrong! He IS the lock screen. November 1, 8:42am, 40°F, peeking from blankets. Iconic."
+    },
+    {
+      q: "What very specific thing does Mommy Aislynn love to do that is her own unique love language with Goose?",
+      opts: ["Braid his fur", "Paint his nails", "Smell the yeast in his ear", "Narrate his dreams aloud"],
+      answer: 2,
+      correct: "Correct! She loves to smell the yeast in his ear. It is a love language. We respect it.",
+      wrong: "Wrong! She smells the yeast in his ear. It's a love language. It's beautiful. We respect it fully."
+    },
+    {
+      q: "Which family member is Goose hoping to add soon?",
+      opts: ["A cat named Pesto", "A goldfish named Gerald", "A Pitbull sister named Yucca", "A tortoise named Derek"],
+      answer: 2,
+      correct: "Correct! Yucca! A Pitbull sister. Goose loves other dogs so the future looks very good.",
+      wrong: "Wrong! It's a Pitbull sister named Yucca. Derek the tortoise remains unconfirmed."
+    },
+    {
+      q: "How many names are in Goose's full name?",
+      opts: ["Three", "Four", "Five", "He goes by one name, like Cher"],
+      answer: 2,
+      correct: "Correct! Five. Goose. Bertleigh. Noelani. Dvorak. Grantz. Every single one earned.",
+      wrong: "Wrong! There are five: Goose Bertleigh Noelani Dvorak Grantz. Count them. Five."
+    },
+    {
+      q: "When was Goose actually adopted (in real life, not according to Mommy)?",
+      opts: ["June 2021", "March 2022", "September 2023", "He has always existed"],
+      answer: 2,
+      correct: "Correct! September 2023. He came to his family, had his heartworm treatment, and immediately got to work being the best dog.",
+      wrong: "Wrong! September 2023. He came in, recovered from heartworm treatment, and took over the entire household immediately."
+    },
+    {
+      q: "What cute physical feature does Goose still have from when he was first adopted?",
+      opts: ["A crooked ear", "A spotted tongue", "A bald patch on his belly", "One eyebrow higher than the other"],
+      answer: 2,
+      correct: "Correct! A very cute bald patch on his belly — a reminder of where he came from and how far he's come. We love the bald patch.",
+      wrong: "Wrong! It's a cute bald patch on his belly — left over from his heartworm days. It is very cute. We love it."
+    }
+  ];
+
+  let currentQ = 0;
+  let score = 0;
+  let answered = false;
+
+  function startQuiz() {
+    currentQ = 0;
+    score = 0;
+    answered = false;
+    document.getElementById('quiz-active').style.display = 'block';
+    document.getElementById('quiz-score').classList.remove('show');
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    const q = quizData[currentQ];
+    const letters = ['A', 'B', 'C', 'D'];
+    document.getElementById('quiz-q-label').textContent = `Question ${currentQ + 1} of ${quizData.length}`;
+    document.getElementById('quiz-progress').style.width = `${(currentQ / quizData.length) * 100}%`;
+    document.getElementById('quiz-question').textContent = q.q;
+    document.getElementById('quiz-options').innerHTML = q.opts.map((opt, i) =>
+      `<button class="quiz-opt" onclick="selectAnswer(${i})">
+        <span class="quiz-opt-letter">${letters[i]}</span>${opt}
+      </button>`
+    ).join('');
+    document.getElementById('quiz-feedback').className = 'quiz-feedback';
+    document.getElementById('quiz-feedback').textContent = '';
+    document.getElementById('quiz-next').className = 'quiz-next-btn';
+    answered = false;
+  }
+
+  function selectAnswer(i) {
+    if (answered) return;
+    answered = true;
+    const q = quizData[currentQ];
+    const opts = document.querySelectorAll('.quiz-opt');
+    opts.forEach(o => o.classList.add('disabled'));
+    const fb = document.getElementById('quiz-feedback');
+    if (i === q.answer) {
+      score++;
+      opts[i].classList.add('correct');
+      fb.textContent = '✓ ' + q.correct;
+      fb.className = 'quiz-feedback correct show';
+    } else {
+      opts[i].classList.add('wrong');
+      opts[q.answer].classList.add('correct');
+      fb.textContent = '✗ ' + q.wrong;
+      fb.className = 'quiz-feedback wrong show';
+    }
+    const nextBtn = document.getElementById('quiz-next');
+    nextBtn.textContent = currentQ < quizData.length - 1 ? 'Next Question →' : 'See My Score 🐾';
+    nextBtn.className = 'quiz-next-btn show';
+  }
+
+  document.getElementById('quiz-next').addEventListener('click', () => {
+    currentQ++;
+    if (currentQ >= quizData.length) {
+      document.getElementById('quiz-active').style.display = 'none';
+      const scoreScreen = document.getElementById('quiz-score');
+      scoreScreen.classList.add('show');
+      document.getElementById('score-num').textContent = score;
+      const pct = score / quizData.length;
+      let msg;
+      if (pct === 1) msg = "PERFECT SCORE. You know Goose like Mommy Aislynn knows Goose. You may smell his ear.";
+      else if (pct >= 0.8) msg = "Excellent! You clearly pay attention. Goose would be proud — though he'd never admit it, because he already knows everything.";
+      else if (pct >= 0.6) msg = "Not bad! You know the basics. Goose respects the effort. He'd still eat grass in front of you though.";
+      else if (pct >= 0.4) msg = "Room for improvement. Goose suggests more time studying his photos. All 72+ of them.";
+      else msg = "Goose was born yesterday and he already knows more than you. Mommy Aislynn is concerned. Please try again.";
+      document.getElementById('score-msg').textContent = msg;
+    } else {
+      renderQuestion();
+    }
+  });
+
+  startQuiz();
+
   function openLightbox(src, title, caption) {
     document.getElementById('lightbox-img').src = src;
     document.getElementById('lightbox-cap').textContent = title + (caption ? ' — ' + caption : '');
